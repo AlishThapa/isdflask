@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Analyze User</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #007bff;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropbtn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .dropdown.show .dropdown-content {
+            display: block;
+        }
+
+        #analysis-container {
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+            justify-content: center;
+        }
+
+        #analysis-container img {
+            max-width: 50%;
+            height: auto;
+            margin: 0 10px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s ease infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        #loader {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .image-row {
+            max-width: 70%;
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .image-row img {
+            max-width: 50%;
+            height: auto;
+            margin: 0 10px;
+        }
+
+        .spacer-box {
+            width: 50px;
+        }
+
+        .loader {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .loader-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+            text-align: center;
+        }
+
+        .loader-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Analyze User</h1>
+    <p>Analysis for user ID: {{ user_id }}</p>
+    <!-- Dropdown menu for analysis methods -->
+    <div class="dropdown" id="modelDropdown">
+        <button class="dropbtn" id="selectedModel">Select Model</button>
+        <div class="dropdown-content">
+            <a href="#" data-model="decisionTree">Decision Tree</a>
+            <a href="#" data-model="randomForest">Random Forest</a>
+            
+        </div>
+    </div>
+    <div id="analysis-container">
+        <div class="image-row">
+            <img id="cm-image" src="" alt="Confusion Matrix">
+            <div class="spacer-box"></div>
+            <img id="roc-image" src="" alt="ROC Curve">
+        </div>
+    </div>
+    <div id="loader">
+        <div class="spinner"></div>
+    </div>
+    <div id="predictionResult"></div>
+    <!-- Loader -->
+    <div id="loader-overlay" class="loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <p>Loading prediction...</p>
+        </div>
+    </div>
+    <script>
+        $('#modelDropdown .dropbtn').click(function () {
+            $(this).parent().toggleClass('show');
+        });
+        var dropdownOptions = document.querySelectorAll('.dropdown-content a');
+        dropdownOptions.forEach(function (option) {
+            option.addEventListener('click', function () {
+                var selectedMethod = this.dataset.model;
+                $('#selectedModel').text(this.textContent);
+                $('#modelDropdown').removeClass('show');
+                $('#analysis-container').show();
+                $('#loader').show();
+                if (selectedMethod === 'decisionTree') {
+                    $('#cm-image').attr('src', '/static/images/cm_Dt.jpg');
+                    $('#roc-image').attr('src', '/static/images/roc_Dt.jpg');
+                    displayAnalyzeButton("Decision Tree");
+                } else if (selectedMethod === 'randomForest') {
+                    $('#cm-image').attr('src', '/static/images/cm_rf.jpg');
+                    $('#roc-image').attr('src', '/static/images/roc_rf.jpg');
+                    displayAnalyzeButton("Random Forest");
+                }
+                $('#loader').hide();
+            });
+        });
+        $(document).click(function (event) {
+            if (!$(event.target).closest('#modelDropdown').length) {
+                $('#modelDropdown').removeClass('show');
+            }
+        });
+        function displayAnalyzeButton(model) {
+            $('.analyze-btn').remove();
+            var analyzeButton = $('<button class="analyze-btn">Analyze User based on ' + model + '</button>');
+            analyzeButton.attr('data-model', model.replace(/\s+/g, ''));
+            $('#analysis-container').append(analyzeButton);
+            // Add CSS styles to the button
+            analyzeButton.css({
+                'background-color': '#4CAF50',
+                'color': 'white',
+                'padding': '12px 24px',
+                'font-size': '16px',
+                'border': 'none',
+                'border-radius': '4px',
+                'cursor': 'pointer',
+                'transition': 'background-color 0.3s ease',
+                'margin-top': '20px'
+            });
+            // Add hover effect
+            analyzeButton.hover(
+                function () {
+                    $(this).css('background-color', '#45a049');
+                },
+                function () {
+                    $(this).css('background-color', '#4CAF50');
+                }
+            );
+            $('.analyze-btn').on('click', () => {
+                $('#loader-overlay').show();  // Show the loader
+                const modelName = $('.analyze-btn').attr('data-model');
+                const userId = "{{ user_id }}";
+                fetch(`/result?userId=${userId}&model=${modelName}`)
+                    .then(response => response.text())
+                    .then(data => {
+                        $('#predictionResult').html(data);
+                        $('#loader-overlay').hide();  // Hide the loader
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        $('#predictionResult').html('An error occurred while fetching the prediction.');
+                        $('#loader-overlay').hide();  // Hide the loader
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>

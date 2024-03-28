@@ -1,0 +1,20 @@
+<!-- dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <form action="/analyze" method="GET">
+        <label for="userId">Select User:</label>
+        <select name="userId" id="userId">
+            {% for user in users %}
+                <option value="{{ user }}">{{ user }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Analyze User</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!-- analyze.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Analysis</title>
+</head>
+<body>
+    <h1>Analysis Results</h1>
+    {% if is_malicious is not none %}
+        {% if is_malicious == 0 %}
+            <p>The user is not malicious.</p>
+        {% else %}
+            <p>The user is malicious.</p>
+        {% endif %}
+    {% else %}
+        <p>No data available for the selected user.</p>
+    {% endif %}
+</body>
+</html>

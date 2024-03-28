@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 400px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .insider-image {
+            display: block;
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .toggle-password {
+            font-size: 24px;
+            /* Increase font size for better visibility */
+            cursor: pointer;
+            color: #007bff;
+            display: inline-block;
+            /* Ensure the icon is inline with the input field */
+            margin-left: 5px;
+            /* Add some spacing between the icon and the input field */
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            background-color: #004080;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <img src="/static/images/insider_threat.jpg" alt="Insider Threat Image" class="insider-image">
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <span class="toggle-password" onclick="togglePassword()">👁️</span>
+                <!-- Eye icon for visibility toggle -->
+            </div>
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+
+    <script>
+        function togglePassword() {
+            var passwordInput = document.getElementById('password');
+            var toggleIcon = document.querySelector('.toggle-password');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = '🔒';// Change icon to show "visible"
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.textContent = '👁️';// Change icon to show "obscured"
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+
+            // // Username validation
+            // if (username.length <= 5 || /[^\w]/.test(username)) {
+            //     alert('Invalid username. Username must be more than 5 characters and should not contain special characters.');
+            //     return;
+            // }
+
+            // // Password validation
+            // if (password.length < 6) {
+            //     alert('Password must be at least 6 characters long.');
+            //     return;
+            // }
+
+            // Username validation
+            if (username !== 'insiderThreat') {
+                alert('Invalid username');
+                return;
+            }
+
+            // Password validation
+            if (password !== 'ISD123456') {
+                alert('Invalid password.');
+                return;
+            }
+            window.location.href = '/home';
+
+            // Perform login action here (e.g., send data to server)
+            alert('Login successful!');
+
+            // Reset form
+            this.reset();
+        });
+    </script>
+</body>
+
+</html>
